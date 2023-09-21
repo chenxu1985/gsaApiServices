@@ -8,5 +8,7 @@ import java.util.List;
 
 public interface GsaMapper {
     Run getRunByAccession(String accession);
+    List<RunDataFile> getRunDataFileList(String accession);
+    List<CraList> getCraList();
 
 }

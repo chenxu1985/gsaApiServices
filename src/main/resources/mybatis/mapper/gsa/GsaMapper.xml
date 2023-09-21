@@ -6,21 +6,37 @@
         <id column="run_id" property="runId" jdbcType="INTEGER" />
         <result column="accession" property="accession" jdbcType="VARCHAR" />
         <result column="ftpUrl" property="ftpUrl" jdbcType="VARCHAR" />
-        <collection property="runDataFiles" ofType="RunDataFile">
+        <collection property="runDataFiles" javaType="java.util.List" ofType="RunDataFile">
             <result column="archived_file_name" property="fileName" jdbcType="VARCHAR" />
             <result column="md5" property="md5" jdbcType="VARCHAR" />
         </collection>
     </resultMap>
 
+    <resultMap id="RunDataFile" type="RunDataFile" >
+        <result column="archived_file_name" property="fileName" jdbcType="VARCHAR" />
+        <result column="md5" property="md5" jdbcType="VARCHAR" />
+    </resultMap>
+
+    <resultMap id="CraList" type="CraList" >
+        <result column="accession" property="accession" jdbcType="VARCHAR" />
+    </resultMap>
     <select id="getRunByAccession" parameterType="String" resultMap="Run">
-        select r.accession,rdf.archived_file_name,rdf.md5,
+        select r.accession,
         (case
         when c.public_root=1 then CONCAT("ftp://download.big.ac.cn/","gsa/",c.accession,"/",r.accession)
         when c.public_root=2 then  CONCAT("ftp://download.big.ac.cn/","gsa2/",c.accession,"/",r.accession)
         when c.public_root=3 then  CONCAT("ftp://download.big.ac.cn/","gsa3/",c.accession,"/",r.accession)
         end) as ftpUrl
-        from run r,run_data_file rdf,cra c
-        where r.run_id=rdf.run_id and r.accession=#{accession}
-        and c.cra_id=r.cra_id and c.status=3 and c.release_state=2 and r.status=10 and r.release_state=2
+        from  run r
+		left join cra c on c.cra_id=r.cra_id and c.status=3 and c.release_state=2
+        where  r.accession=#{accession} and r.status=10 and r.release_state=2
+    </select>
+    <select id="getRunDataFileList" parameterType="String" resultMap="RunDataFile">
+        select rdf.archived_file_name,rdf.md5 from run r,run_data_file rdf where rdf.run_id=r.run_id and r.accession=#{accession}
+    </select>
+    <select id="getCraList"  resultMap="CraList">
+        select c.accession from cra c
+        where c.release_state = 2 AND c.status = 3  AND (c.is_controlled is null or c.is_controlled!=1)
+        ORDER  by c.release_time desc
     </select>
 </mapper>
