@@ -4,6 +4,7 @@ import cn.ac.big.bigd.webservice.mapper.api.ApiMapper;
 import cn.ac.big.bigd.webservice.mapper.gsa.GsaMapper;
 import cn.ac.big.bigd.webservice.model.api.Api;
 import cn.ac.big.bigd.webservice.model.gsa.CraList;
+import cn.ac.big.bigd.webservice.model.gsa.MetaData;
 import cn.ac.big.bigd.webservice.model.gsa.Run;
 import cn.ac.big.bigd.webservice.model.gsa.RunDataFile;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,6 +45,22 @@ public class KingfisherController {
         return run;
     }
 
+
+    /**
+     * 通过cra的accession获取metaDataUrl
+     */
+    @RequestMapping(value = "/getMetaData/{accession}")
+    public MetaData getMetaData(HttpServletResponse httpServletResponse, @PathVariable("accession") String accession, HttpServletRequest request) throws Exception {
+        httpServletResponse.setHeader("Access-Control-Allow-Origin", "*");
+        MetaData metaData = this.gsaMapper.getMetaDataByAccession(accession);
+        String ip = getIp(request);
+        Api api = new Api();
+        api.setIp(ip);
+        api.setApi_type_id(1);
+        api.setApi_subType_id(1);
+        int apiCount = this.apiMapper.saveApi(api);
+        return metaData;
+    }
     /**
      * 获取全部已经发布CRA编号
      */

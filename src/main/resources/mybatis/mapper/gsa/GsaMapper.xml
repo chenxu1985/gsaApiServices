@@ -20,6 +20,11 @@
     <resultMap id="CraList" type="CraList" >
         <result column="accession" property="accession" jdbcType="VARCHAR" />
     </resultMap>
+
+    <resultMap id="MetaData" type="MetaData" >
+        <result column="accession" property="accession" jdbcType="VARCHAR" />
+        <result column="metaDataUrl" property="metaDataUrl" jdbcType="VARCHAR" />
+    </resultMap>
     <select id="getRunByAccession" parameterType="String" resultMap="Run">
         select r.accession,
         (case
@@ -38,5 +43,9 @@
         select c.accession from cra c
         where c.release_state = 2 AND c.status = 3  AND (c.is_controlled is null or c.is_controlled!=1)
         ORDER  by c.release_time desc
+    </select>
+    <select id="getMetaDataByAccession"  resultMap="MetaData">
+         select c.accession,CONCAT('https://ngdc.cncb.ac.cn/gsa/file/exportExcelFile?dlAcession=',c.accession,'&amp;type=3') as metaDataUrl from cra c
+        where c.release_state = 2 AND c.status = 3  AND (c.is_controlled is null or c.is_controlled!=1) and c.accession=#{accession}
     </select>
 </mapper>
