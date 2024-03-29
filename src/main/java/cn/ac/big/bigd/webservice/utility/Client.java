@@ -12,7 +12,7 @@ public class Client {
                 RestClient.builder(
 //                        new HttpHost("localhost", 9200, "http")
 //                        new HttpHost("192.168.118.79", 9200, "http")
-                        new HttpHost("192.168.164.99", 9202, "http")
+                        new HttpHost("192.168.164.106", 9201, "http")
                         // 添加其他配置如认证信息等
                 )
         );
