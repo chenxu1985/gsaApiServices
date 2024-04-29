@@ -52,7 +52,7 @@ public class ElasticsearchController {
                 count =1;
             }
         } else {
-            SearchRequest searchRequest = new SearchRequest("gsa");
+            SearchRequest searchRequest = new SearchRequest("gsatime");
             SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
             BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder();
             QueryStringQueryBuilder queryStringQueryBuilder = new QueryStringQueryBuilder(term);
@@ -72,7 +72,7 @@ public class ElasticsearchController {
     }
     public Experiment getExperiment(String keyword,RestHighLevelClient restHighLevelClient) throws IOException {
         Experiment experiment = new Experiment();
-        SearchRequest searchRequest = new SearchRequest("gsa");
+        SearchRequest searchRequest = new SearchRequest("gsatime");
         SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
         BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder();
         QueryStringQueryBuilder queryStringQueryBuilder = new QueryStringQueryBuilder(keyword);
@@ -95,7 +95,7 @@ public class ElasticsearchController {
             MatchQueryBuilder expMatchBuilder = new MatchQueryBuilder("accession", keyword);
             expSourceBuilder.trackTotalHits(true);
             expSourceBuilder.query(expMatchBuilder);
-            SearchRequest expCountRequest = new SearchRequest("gsa");
+            SearchRequest expCountRequest = new SearchRequest("gsatime");
             expCountRequest.source(expSourceBuilder);
             SearchResponse expResponse = restHighLevelClient.search(expCountRequest, RequestOptions.DEFAULT);
             SearchHit[] expHits = expResponse.getHits().getHits();
@@ -108,7 +108,7 @@ public class ElasticsearchController {
     }
     public Experiment getCra(String keyword,RestHighLevelClient restHighLevelClient) throws IOException {
         Experiment experiment = new Experiment();
-        SearchRequest searchRequest = new SearchRequest("gsa");
+        SearchRequest searchRequest = new SearchRequest("gsatime");
         SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
         BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder();
         MatchQueryBuilder craBuilder = new MatchQueryBuilder("accession", keyword);
