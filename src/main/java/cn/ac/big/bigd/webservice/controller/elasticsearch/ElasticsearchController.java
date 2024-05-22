@@ -56,9 +56,9 @@ public class ElasticsearchController {
             SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
             BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder();
             QueryStringQueryBuilder queryStringQueryBuilder = new QueryStringQueryBuilder(term);
-            MatchQueryBuilder matchNotQueryBuilder = new MatchQueryBuilder("type", "Run");
+            MatchQueryBuilder matchMustQueryBuilder = new MatchQueryBuilder("type", "Experiment");
             MatchQueryBuilder matchNotQueryBuilderR = new MatchQueryBuilder("releaseState", "1");
-            boolQueryBuilder.mustNot(matchNotQueryBuilder);
+            boolQueryBuilder.must(matchMustQueryBuilder);
             boolQueryBuilder.mustNot(matchNotQueryBuilderR);
             boolQueryBuilder.must(queryStringQueryBuilder);
             sourceBuilder.trackTotalHits(true);
