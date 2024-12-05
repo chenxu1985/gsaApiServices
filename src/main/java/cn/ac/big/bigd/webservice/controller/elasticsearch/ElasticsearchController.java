@@ -11,6 +11,7 @@ import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.core.TimeValue;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.MatchQueryBuilder;
+import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.index.query.QueryStringQueryBuilder;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
@@ -22,6 +23,8 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -33,7 +36,7 @@ public class ElasticsearchController {
     /**
      * 通过GSA search 查询出数量
      */
-    @RequestMapping(value = "/getCountByGsa/{term}")
+        @RequestMapping(value = "/getCountByGsa/{term}")
     public Integer getCountByGsa(HttpServletResponse httpServletResponse, @PathVariable("term") String term, HttpServletRequest request) throws Exception {
         httpServletResponse.setHeader("Access-Control-Allow-Origin", "*");
         Client clientConfig = new Client();
@@ -46,6 +49,8 @@ public class ElasticsearchController {
             if(exp!=null){
                 count =1;
             }
+        }else if(ElasticsearchTools.checkRegExp(term,2)){
+            count  = this.getRun(term,restHighLevelClient);
         }else if(ElasticsearchTools.checkRegExp(term,3)){
             Experiment exp  = this.getCra(term,restHighLevelClient);
             if(exp!=null){
@@ -124,5 +129,20 @@ public class ElasticsearchController {
             break;
         }
         return experiment;
+    }
+    public int getRun(String keyword,RestHighLevelClient restHighLevelClient) throws IOException {
+//        Experiment experiment = new Experiment();
+        SearchRequest searchRequest = new SearchRequest("gsatime");
+        SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
+        MatchQueryBuilder matchQueryBuilder = QueryBuilders.matchQuery("runAcc", keyword);
+        searchSourceBuilder.query(matchQueryBuilder);
+        searchRequest.source(searchSourceBuilder);
+        SearchResponse searchResponse = restHighLevelClient.search(searchRequest, RequestOptions.DEFAULT);
+        SearchHit[] searchHits = searchResponse.getHits().getHits();
+        int count = 0;
+        if(searchHits!=null){
+            count=1;
+        }
+        return count;
     }
 }
